@@ -88,11 +88,34 @@ class UserController extends Controller
             $user->update($request->only('firstname', 'lastname', 'password'));
             return response()->json(
                 [
+                    'error'=>false,
                     "user"=> $user
                 ],
                 200
             );
         }
     }
+        
+        public function delete(Request $request, $userId)
+        {
+            $user = User::find($userId);
+            
+            if ($user) {
+                $user->delete();
+                return response()->json(
+                    [
+                        'error'=>false
+                    ],
+                    204
+                );
+            }
+            return response()->json(
+                [
+                    'error'=> true,
+                    'message'=> 'delete failed'
+                ],
+                400
+            );
+        }
     //
 }

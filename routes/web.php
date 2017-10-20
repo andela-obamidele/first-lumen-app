@@ -27,5 +27,6 @@ $router->group(
             '/users/{id}', 'UserController@getUser'
         );
         $router->put('/users/{id}', 'UserController@update');
-    }
+        $router->delete('/users/{id}', 'UserController@delete');
+    } 
 );
