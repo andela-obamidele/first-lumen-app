@@ -35,7 +35,21 @@ class UserController extends Controller
                 'password' => 'required'
             ]
         );
+
+        $user = new User();
+        $user->firstname = $request['firstname'];
+        $user->lastname = $request['lastname'];
+        $user->username = $request['username'];
+        $user->email = $request['email'];
+        $user->password = $request['password'];
+
+        $user->save();
+
+        unset($user->password);
+
+        return array('user'=>$user);
     }
+    
 
     //
 }
