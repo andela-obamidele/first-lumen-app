@@ -20,5 +20,11 @@ $router->group(
         $router->post(
             '/users', 'UserController@store'
         );
+        $router->get(
+            '/users', 'UserController@getAllUsers'
+        );
+        $router->get(
+            '/users/{id}', 'UserController@getUser'
+        );
     }
 );

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\User;
 use Illuminate\Http\Request;
-use Illuminate\Hashing\BcryptHasher;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -41,7 +41,7 @@ class UserController extends Controller
         $user->lastname = $request['lastname'];
         $user->username = $request['username'];
         $user->email = $request['email'];
-        $user->password = $request['password'];
+        $user->password = Hash::make($request['password']);
 
         $user->save();
 
@@ -50,6 +50,33 @@ class UserController extends Controller
         return array('user'=>$user);
     }
     
+    public function getAllUsers() 
+    {
+        return User::all();
+    }
+
+    public function getUser(Request $request, $id)
+    {
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(
+                array(
+                    'error'=>true,
+                    'message'=>'user not found',
+                    'id'=>$id
+                ),
+                404
+            );
+        }  
+        return response()->json(
+            array(
+                'error'=>false,
+                'user'=>$user
+            ),
+            200
+        );
+    }
+
 
     //
 }
