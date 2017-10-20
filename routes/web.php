@@ -26,5 +26,6 @@ $router->group(
         $router->get(
             '/users/{id}', 'UserController@getUser'
         );
+        $router->put('/users/{id}', 'UserController@update');
     }
 );

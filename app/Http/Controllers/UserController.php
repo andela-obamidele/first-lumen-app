@@ -77,6 +77,22 @@ class UserController extends Controller
         );
     }
 
-
+    public function update(Request $request, $userId)
+    {
+        $user = User::find($userId);
+        if ($user) {
+            $password = $request->input('password');
+            if ($password) {
+                $request->password = Hash::make($password);
+            }
+            $user->update($request->only('firstname', 'lastname', 'password'));
+            return response()->json(
+                [
+                    "user"=> $user
+                ],
+                200
+            );
+        }
+    }
     //
 }
