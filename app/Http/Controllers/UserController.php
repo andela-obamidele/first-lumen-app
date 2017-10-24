@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\User;
 use Illuminate\Http\Request;
-use Illuminate\Hashing\BcryptHasher;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -35,7 +35,87 @@ class UserController extends Controller
                 'password' => 'required'
             ]
         );
+
+        $user = new User();
+        $user->firstname = $request['firstname'];
+        $user->lastname = $request['lastname'];
+        $user->username = $request['username'];
+        $user->email = $request['email'];
+        $user->password = Hash::make($request['password']);
+
+        $user->save();
+
+        unset($user->password);
+
+        return array('user'=>$user);
+    }
+    
+    public function getAllUsers() 
+    {
+        return User::all();
     }
 
+    public function getUser(Request $request, $id)
+    {
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json(
+                array(
+                    'error'=>true,
+                    'message'=>'user not found',
+                    'id'=>$id
+                ),
+                404
+            );
+        }  
+        return response()->json(
+            array(
+                'error'=>false,
+                'user'=>$user
+            ),
+            200
+        );
+    }
+
+    public function update(Request $request, $userId)
+    {
+        $user = User::find($userId);
+        if ($user) {
+            $password = $request->input('password');
+            if ($password) {
+                $request->password = Hash::make($password);
+            }
+            $user->update($request->only('firstname', 'lastname', 'password'));
+            return response()->json(
+                [
+                    'error'=>false,
+                    "user"=> $user
+                ],
+                200
+            );
+        }
+    }
+        
+        public function delete(Request $request, $userId)
+        {
+            $user = User::find($userId);
+            
+            if ($user) {
+                $user->delete();
+                return response()->json(
+                    [
+                        'error'=>false
+                    ],
+                    204
+                );
+            }
+            return response()->json(
+                [
+                    'error'=> true,
+                    'message'=> 'delete failed'
+                ],
+                400
+            );
+        }
     //
 }

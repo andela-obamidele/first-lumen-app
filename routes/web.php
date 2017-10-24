@@ -20,5 +20,13 @@ $router->group(
         $router->post(
             '/users', 'UserController@store'
         );
-    }
+        $router->get(
+            '/users', 'UserController@getAllUsers'
+        );
+        $router->get(
+            '/users/{id}', 'UserController@getUser'
+        );
+        $router->put('/users/{id}', 'UserController@update');
+        $router->delete('/users/{id}', 'UserController@delete');
+    } 
 );
