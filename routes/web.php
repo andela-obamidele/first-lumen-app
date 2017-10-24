@@ -10,7 +10,23 @@
 | and give it the Closure to call when that URI is requested.
 |
 */
-
-$router->get('/', function () use ($router) {
-    return str_random(32); // generate random string
-});
+$router->group(
+    ['prefix' => 'api/v1'], function () use ($router) {
+        $router->get(
+            '/', function () {
+                return 'NOTE TAKER API v1.0';
+            }
+        );
+        $router->post(
+            '/users', 'UserController@store'
+        );
+        $router->get(
+            '/users', 'UserController@getAllUsers'
+        );
+        $router->get(
+            '/users/{id}', 'UserController@getUser'
+        );
+        $router->put('/users/{id}', 'UserController@update');
+        $router->delete('/users/{id}', 'UserController@delete');
+    } 
+);

@@ -18,7 +18,7 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
      * @var array
      */
     protected $fillable = [
-        'name', 'email',
+        'firstname', 'lastname', 'username', 'password',
     ];
 
     /**
@@ -29,4 +29,14 @@ class User extends Model implements AuthenticatableContract, AuthorizableContrac
     protected $hidden = [
         'password',
     ];
+    
+    /** 
+    * User has many notes
+    *
+    * @return \Illuminate\Database\Eloquent\Relations\HasMany
+    */
+    public function notes()
+    {
+        return $this->hasMany('App\Note');
+    }
 }
