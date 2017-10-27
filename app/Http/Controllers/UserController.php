@@ -96,26 +96,26 @@ class UserController extends Controller
         }
     }
         
-        public function delete(Request $request, $userId)
-        {
-            $user = User::find($userId);
+    public function delete(Request $request, $userId)
+    {
+        $user = User::find($userId);
             
-            if ($user) {
-                $user->delete();
-                return response()->json(
-                    [
-                        'error'=>false
-                    ],
-                    204
-                );
-            }
+        if ($user) {
+            $user->delete();
             return response()->json(
                 [
-                    'error'=> true,
-                    'message'=> 'delete failed'
+                        'error'=>false
                 ],
-                400
+                204
             );
         }
+        return response()->json(
+            [
+                    'error'=> true,
+                    'message'=> 'delete failed'
+            ],
+            400
+        );
+    }
     //
 }
