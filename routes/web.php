@@ -28,5 +28,11 @@ $router->group(
         );
         $router->put('/users/{id}', 'UserController@update');
         $router->delete('/users/{id}', 'UserController@delete');
+
+        $router->post('/notes', 'NoteController@store');
+        $router->get('/notes', 'NoteController@getAllNotes');
+        $router->get('/notes/{id}', 'NoteController@getNote');
+        $router->put('/notes/{id}', 'NoteController@update');
+        $router->delete('/notes/{id}', 'NoteController@delete');
     } 
 );
