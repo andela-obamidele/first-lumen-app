@@ -12,6 +12,8 @@
 */
 $router->group(
     ['prefix' => 'api/v1'], function () use ($router) {
+        $router->post('/auth/login', 'AuthController@postLogin');
+        
         $router->get(
             '/', function () {
                 return 'NOTE TAKER API v1.0';
@@ -21,18 +23,18 @@ $router->group(
             '/users', 'UserController@store'
         );
         $router->get(
-            '/users', 'UserController@getAllUsers'
+            '/users',['middleware'=>'auth'], 'UserController@getAllUsers'
         );
         $router->get(
-            '/users/{id}', 'UserController@getUser'
+            '/users/{id}', ['middleware'=>'auth'], 'UserController@getUser'
         );
-        $router->put('/users/{id}', 'UserController@update');
-        $router->delete('/users/{id}', 'UserController@delete');
+        $router->put('/users/{id}', ['middleware'=>'auth'], 'UserController@update');
+        $router->delete('/users/{id}', ['middleware'=>'auth'], 'UserController@delete');
 
-        $router->post('/notes', 'NoteController@store');
-        $router->get('/notes', 'NoteController@getAllNotes');
-        $router->get('/notes/{id}', 'NoteController@getNote');
-        $router->put('/notes/{id}', 'NoteController@update');
-        $router->delete('/notes/{id}', 'NoteController@delete');
-    } 
+        $router->post('/notes',['middleware'=>'auth'], 'NoteController@store');
+        $router->get('/notes', ['middleware'=>'auth'],'NoteController@getAllNotes');
+        $router->get('/notes/{id}', ['middleware'=>'auth'],'NoteController@getNote');
+        $router->put('/notes/{id}', ['middleware'=>'auth'],'NoteController@update');
+        $router->delete('/notes/{id}', ['middleware'=>'auth'],'NoteController@delete');
+    }
 );

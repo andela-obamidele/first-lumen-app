@@ -17,7 +17,7 @@ class NotesTableSeeder extends Seeder
             [
                 'title' => str_random(10),
                 'content' => str_random(100),
-                'user_id' => 1,
+                'user_id' => 4,
                 'created_at' => date("Y-m-d H:i:s"),
                 'updated_at' => date("Y-m-d H:i:s")
             ]
