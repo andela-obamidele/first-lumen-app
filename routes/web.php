@@ -23,18 +23,18 @@ $router->group(
             '/users', 'UserController@store'
         );
         $router->get(
-            '/users',['middleware'=>'auth'], 'UserController@getAllUsers'
-        );
+            '/users', ['middleware'=>'auth', 'uses'=>'UserController@getAllUsers'
+            ]);
         $router->get(
-            '/users/{id}', ['middleware'=>'auth'], 'UserController@getUser'
+            '/users/{id}', ['middleware'=>'auth', 'uses'=>'UserController@getUser']
         );
-        $router->put('/users/{id}', ['middleware'=>'auth'], 'UserController@update');
-        $router->delete('/users/{id}', ['middleware'=>'auth'], 'UserController@delete');
+        $router->put('/users/{id}', ['middleware'=>'auth', 'uses'=>'UserController@update']);
+        $router->delete('/users/{id}', ['middleware'=>'auth', 'UserController@delete']);
 
-        $router->post('/notes',['middleware'=>'auth'], 'NoteController@store');
-        $router->get('/notes', ['middleware'=>'auth'],'NoteController@getAllNotes');
-        $router->get('/notes/{id}', ['middleware'=>'auth'],'NoteController@getNote');
-        $router->put('/notes/{id}', ['middleware'=>'auth'],'NoteController@update');
-        $router->delete('/notes/{id}', ['middleware'=>'auth'],'NoteController@delete');
+        $router->post('/notes',['middleware'=>'auth', 'uses'=>'NoteController@store']);
+        $router->get('/notes', ['middleware'=>'auth','uses'=>'NoteController@getAllNotes']);
+        $router->get('/notes/{id}', ['middleware'=>'auth','uses'=>'NoteController@getNote']);
+        $router->put('/notes/{id}', ['middleware'=>'auth','uses'=>'NoteController@update']);
+        $router->delete('/notes/{id}', ['middleware'=>'auth','uses'=>'NoteController@delete']);
     }
 );
