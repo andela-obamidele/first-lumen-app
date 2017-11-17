@@ -1,1 +1,1 @@
-web: php -S ps-note-taker.herokuapp.com:$PORT -t public
+web: vendor/bin/heroku-php-apache2 public/
