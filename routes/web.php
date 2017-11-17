@@ -23,7 +23,7 @@ $router->group(
             '/users', 'UserController@store'
         );
         $router->get(
-            '/users', ['middleware'=>'auth', 'UserController@getAllUsers'
+            '/users', ['middleware'=>'auth', 'uses'=>'UserController@getAllUsers'
             ]);
         $router->get(
             '/users/{id}', ['middleware'=>'auth', 'uses'=>'UserController@getUser']
