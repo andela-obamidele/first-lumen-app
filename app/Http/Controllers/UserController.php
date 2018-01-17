@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class UserController extends Controller
 {
+
+
     /**
      * Create a new controller instance.
      *
@@ -15,14 +18,15 @@ class UserController extends Controller
      */
     public function __construct()
     {
-        //
+
     }
+
     /**
      * Controller for POST /users. Creates an new user
-     * 
+     *
      * @param Request $request Http Request object
-     * 
-     * @return void
+     *
+     * @return array
      */
     public function store(Request $request)
     {
@@ -79,8 +83,10 @@ class UserController extends Controller
 
     public function update(Request $request, $userId)
     {
+        $loggedInUserId =  JWTAuth::parseToken()->toUser()->id;
+
         $user = User::find($userId);
-        if ($user) {
+        if ($user && $loggedInUserId == $userId) {
             $password = $request->input('password');
             if ($password) {
                 $request->password = Hash::make($password);
@@ -98,13 +104,15 @@ class UserController extends Controller
         
     public function delete(Request $request, $userId)
     {
+        $loggedInUserId = JWTAuth::parseToken()->toUser()->id;
+
         $user = User::find($userId);
-            
-        if ($user) {
+        if ($user && $userId == $loggedInUserId) {
             $user->delete();
             return response()->json(
                 [
-                        'error'=>false
+                        'error'=>false,
+                        'message'=>'user delete successful'
                 ],
                 204
             );
@@ -112,7 +120,7 @@ class UserController extends Controller
         return response()->json(
             [
                     'error'=> true,
-                    'message'=> 'delete failed'
+                    'message'=> 'You can only delete your own account'
             ],
             400
         );

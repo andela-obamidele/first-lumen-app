@@ -14,14 +14,11 @@ $router->group(
     ['prefix' => 'api/v1'], function () use ($router) {
         $router->post('/auth/login', 'AuthController@postLogin');
         
-        $router->get(
-            '/', function () {
+        $router->get('/', function () {
                 return 'NOTE TAKER API v1.0';
             }
         );
-        $router->post(
-            '/users', 'UserController@store'
-        );
+        $router->post('/users', 'UserController@store');
         $router->get(
             '/users', ['middleware'=>'auth', 'uses'=>'UserController@getAllUsers'
             ]);
@@ -29,7 +26,7 @@ $router->group(
             '/users/{id}', ['middleware'=>'auth', 'uses'=>'UserController@getUser']
         );
         $router->put('/users/{id}', ['middleware'=>'auth', 'uses'=>'UserController@update']);
-        $router->delete('/users/{id}', ['middleware'=>'auth', 'UserController@delete']);
+        $router->delete('/users/{id}', ['middleware'=>'auth', 'uses'=>'UserController@delete']);
 
         $router->post('/notes',['middleware'=>'auth', 'uses'=>'NoteController@store']);
         $router->get('/notes', ['middleware'=>'auth','uses'=>'NoteController@getAllNotes']);

@@ -90,7 +90,7 @@ class NoteController extends Controller
 
     public function update(Request $request, $id) 
     {
-        $currentUserId =  JWTAuth::parseToken()->toUser()->id;
+        $currentUserId = JWTAuth::parseToken()->toUser()->id;
         $note = Note::find($id);
         
         if ( $currentUserId !== $note->user_id) {
