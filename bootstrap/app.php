@@ -42,6 +42,10 @@ $app->withEloquent();
 |
 */
 
+/*
+Configure laravel cor
+*/
+$app->configure('cors');
 $app->singleton(
     Illuminate\Contracts\Debug\ExceptionHandler::class,
     App\Exceptions\Handler::class
@@ -62,13 +66,12 @@ $app->singleton(
 | route or middleware that'll be assigned to some specific routes.
 |
 */
-
-// $app->middleware([
-//    App\Http\Middleware\ExampleMiddleware::class
-// ]);
+$app->middleware([
+    \Barryvdh\Cors\HandleCors::class,
+]);
 
 $app->routeMiddleware([
-    'auth' => App\Http\Middleware\Authenticate::class,
+    'auth' => App\Http\Middleware\Authenticate::class, 
 ]);
 
 /*
@@ -87,6 +90,8 @@ $app->register(App\Providers\AppServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
 
 $app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class);
+$app->register(Barryvdh\Cors\ServiceProvider::class);
+
 
 
 /*

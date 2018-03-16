@@ -21,6 +21,7 @@ class UserController extends Controller
 
     }
 
+
     /**
      * Controller for POST /users. Creates an new user
      *
@@ -34,7 +35,7 @@ class UserController extends Controller
             $request, [
                 'firstname' => 'required',
                 'lastname' => 'required',
-                'username' => 'required',
+                'username' => 'required|unique:users',
                 'email' => 'required|unique:users|email',
                 'password' => 'required'
             ]
@@ -53,7 +54,7 @@ class UserController extends Controller
 
         return array('user'=>$user);
     }
-    
+
     public function getAllUsers() 
     {
         return User::all();
