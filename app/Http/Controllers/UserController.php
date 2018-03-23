@@ -3,21 +3,21 @@
 namespace App\Http\Controllers;
 
 use App\User;
-use Illuminate\Http\Request;
 use Illuminate\Hashing\BcryptHasher;
+use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
 /**
  * Controller for login
- * 
+ *
  * @category Controller
- * 
+ *
  * @package None
- * 
+ *
  * @author Olufisayo Bamidele <andela.obamidele@andela.com>
- * 
+ *
  * @license /license.md MIT
- * 
+ *
  * @link None
  */
 class UserController extends Controller
@@ -38,7 +38,6 @@ class UserController extends Controller
         $this->hash = $hash;
     }
 
-
     /**
      * Controller for POST /users. Creates an new user
      *
@@ -54,7 +53,7 @@ class UserController extends Controller
                 'lastname' => 'required',
                 'username' => 'required|unique:users',
                 'email' => 'required|unique:users|email',
-                'password' => 'required'
+                'password' => 'required',
             ]
         );
 
@@ -68,7 +67,7 @@ class UserController extends Controller
         $user->save();
         unset($user->password);
 
-        return array('user'=>$user);
+        return array('user' => $user);
     }
 
     /**
@@ -76,7 +75,7 @@ class UserController extends Controller
      *
      * @return Illumnate\Http\Model
      */
-    public function getAllUsers() 
+    public function getAllUsers()
     {
         return $this->user->all();
     }
@@ -95,19 +94,37 @@ class UserController extends Controller
         if (!$user) {
             return response()->json(
                 array(
-                    'error'=>true,
-                    'message'=>'user not found',
-                    'id' => $userId
+                    'error' => true,
+                    'message' => 'user not found',
+                    'id' => $userId,
                 ),
                 404
             );
-        }  
+        }
 
         return response()->json(
             array(
-                'error'=>false,
-                'user'=>$user
+                'error' => false,
+                'user' => $user,
             ),
+            200
+        );
+    }
+
+    /**
+     * It returns response of user data by parsing JWT.
+     *
+     * @return Illuminate\Http\Response Response of current user
+     */
+    public function getCurrentUser()
+    {
+
+        $currentUser = JWTAuth::parseToken()->toUser();
+
+        return response()->json(
+            [
+                'user' => $currentUser,
+            ],
             200
         );
     }
@@ -117,12 +134,12 @@ class UserController extends Controller
      *
      * @param Request $request Laravel Http request
      * @param int     $userId  id of the user to be updated
-     * 
+     *
      * @return Illuminate\Http\Response http response of updated user
      */
     public function update(Request $request, $userId)
     {
-        $loggedInUserId =  JWTAuth::parseToken()->toUser()->id;
+        $loggedInUserId = JWTAuth::parseToken()->toUser()->id;
         $user = $this->user->find($userId);
 
         if ($user && $loggedInUserId == $userId) {
@@ -133,17 +150,17 @@ class UserController extends Controller
             }
 
             $user->update($request->only('firstname', 'lastname', 'password'));
-    
+
             return response()->json(
                 [
-                    'error'=>false,
-                    "user"=> $user
+                    'error' => false,
+                    'user' => $user,
                 ],
                 200
             );
         }
     }
-    
+
     /**
      * Deletes a user. Only a user can delete his/her account
      *
@@ -160,8 +177,8 @@ class UserController extends Controller
             $user->delete();
             return response()->json(
                 [
-                        'error'=>false,
-                        'message'=>'user delete successful'
+                    'error' => false,
+                    'message' => 'user delete successful',
                 ],
                 204
             );
@@ -169,8 +186,8 @@ class UserController extends Controller
 
         return response()->json(
             [
-                    'error'=> true,
-                    'message'=> 'You can only delete your own account'
+                'error' => true,
+                'message' => 'You can only delete your own account',
             ],
             400
         );
