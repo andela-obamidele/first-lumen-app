@@ -5,19 +5,43 @@ use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use App\Note;
 
+/**
+ * It contains methods for carrying out operation on Note model
+ * 
+ * @category Controller
+ *
+ * @package None
+ * 
+ * @author Olufisayo Bamidele <fisiwizy@gmail.com>
+ *
+ * @license /license.md MIT
+ * 
+ * @link None
+ */
 class NoteController extends Controller
 {
 
+    public $note;
+
     /**
-     * Create a new controller instance.
+     * Inject an instance of Note model into NoteController
      *
+     * @param Note $note Note model
+     * 
      * @return void
      */
-    public function __construct()
+    public function __construct(Note $note)
     {
-        //
+        $this->note = $note;
     }
 
+    /**
+     * It saves a note
+     *
+     * @param Request $request HTTP request
+     * 
+     * @return Illuminate\Http\Response JSON response
+     */
     public function store(Request $request)
     {
 
@@ -38,17 +62,23 @@ class NoteController extends Controller
 
         return response()->json(
             [
-                'note'=>$note           
+                'note' => $note           
             ],
             201
         );
 
     }
 
-    public function getAllNotes(Request $request)
+    /**
+     * It responds with all notes belonging to currently authenticated user
+     *
+     * @return Illuminate\Http\Response JSON response
+     */
+    public function getAllNotes()
     {
         $currentUserId = JWTAuth::parseToken()->toUser()->id;
-        $notes = Note::all()->where('user_id',$currentUserId);
+        $notes = $this->note->all()->where('user_id', $currentUserId);
+
         if (count($notes) > 0) {
             return response()->json(
                 ['notes'=>$notes],
@@ -64,10 +94,17 @@ class NoteController extends Controller
         );
     }
 
-    public function getNote(Request $request, $id)
+    /**
+     * It responds with all a note
+     * 
+     * @param int $noteId id of the note to be returned
+     * 
+     * @return Illuminate\Http\Response JSON response
+     */
+    public function getNote($noteId)
     {
-       $currentUserId =  JWTAuth::parseToken()->toUser()->id;
-       $note = Note::find($id);
+        $currentUserId =  JWTAuth::parseToken()->toUser()->id;
+        $note = Note::find($noteId);
        
         if (!$note) {
             return response()->json(
@@ -75,8 +112,14 @@ class NoteController extends Controller
                 404
             );
         }
-        if ( $currentUserId !== $note->user_id) {
-            return response()->json(['error' => 'sorry, you don\'t have permission to view this file'], 403);
+        if ($currentUserId !== $note->user_id) {
+            return response()
+                ->json(
+                    [
+                    'error' => 
+                    'sorry, you don\'t have permission to view this file'],
+                    403
+                );
         }
      
         return response()->json(
@@ -88,10 +131,18 @@ class NoteController extends Controller
 
     }
 
-    public function update(Request $request, $id) 
+    /**
+     * It responds with all a note
+     *
+     * @param Request $request Laravel Http Request
+     * @param int     $noteId  id of the note to be returned
+     *
+     * @return Illuminate\Http\Response JSON response
+     */
+    public function update(Request $request, $noteId) 
     {
         $currentUserId = JWTAuth::parseToken()->toUser()->id;
-        $note = Note::find($id);
+        $note = Note::find($noteId);
         
         if ( $currentUserId !== $note->user_id) {
             return response()->json(['error' => 'sorry, you don\'t have permission to view this file'], 403);
@@ -116,13 +167,24 @@ class NoteController extends Controller
         );
     }
 
-    public function delete(Request $request, $id)
+    /**
+     * It deletes a note that belongs to the currently logged in user
+     * 
+     * @param int $noteId Id of the note to be deleted
+     * 
+     * @return Illuminate\Http\Response Http response of success message or error
+     */
+    public function delete($noteId)
     {
         $currentUserId =  JWTAuth::parseToken()->toUser()->id;
-        $note = Note::find($id);
+        $note = $this->$note->find($noteId);
 
-        if ( $currentUserId !== $note->user_id) {
-            return response()->json(['error' => 'sorry, you don\'t have permission to view this file'], 403);
+        if ($currentUserId !== $note->user_id) {
+            return response()
+            ->json(
+                ['error' => 'sorry, you don\'t have permission to view this file'],
+                403
+            );
         }
 
         if ($note) {
@@ -143,5 +205,4 @@ class NoteController extends Controller
             400
         );
     }
-    //
 }

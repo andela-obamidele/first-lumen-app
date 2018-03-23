@@ -66,13 +66,17 @@ $app->singleton(
 | route or middleware that'll be assigned to some specific routes.
 |
 */
-$app->middleware([
-    \Barryvdh\Cors\HandleCors::class,
-]);
+$app->middleware(
+    [
+        \Barryvdh\Cors\HandleCors::class,
+    ]
+);
 
-$app->routeMiddleware([
-    'auth' => App\Http\Middleware\Authenticate::class, 
-]);
+$app->routeMiddleware(
+    [
+        'auth' => App\Http\Middleware\Authenticate::class, 
+    ]
+);
 
 /*
 |--------------------------------------------------------------------------
@@ -105,10 +109,13 @@ $app->register(Barryvdh\Cors\ServiceProvider::class);
 |
 */
 
-$app->router->group([
-    'namespace' => 'App\Http\Controllers',
-], function ($router) {
-    require __DIR__.'/../routes/web.php';
-});
+$app->router->group(
+    [
+        'namespace' => 'App\Http\Controllers',
+    ],
+    function ($router) {
+        require __DIR__.'/../routes/web.php';
+    }
+);
 
 return $app;
