@@ -4,21 +4,38 @@ namespace App\Http\Controllers;
 
 use App\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Hashing\BcryptHasher;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
+/**
+ * Controller for login
+ * 
+ * @category Controller
+ * 
+ * @package None
+ * 
+ * @author Olufisayo Bamidele <andela.obamidele@andela.com>
+ * 
+ * @license /license.md MIT
+ * 
+ * @link None
+ */
 class UserController extends Controller
 {
 
+    public $user;
+    public $hash;
 
     /**
      * Create a new controller instance.
      *
-     * @return void
+     * @param User         $user User model
+     * @param BcryptHasher $hash Hash helper
      */
-    public function __construct()
+    public function __construct(User $user, BcryptHasher $hash)
     {
-
+        $this->user = $user;
+        $this->hash = $hash;
     }
 
 
@@ -27,7 +44,7 @@ class UserController extends Controller
      *
      * @param Request $request Http Request object
      *
-     * @return array
+     * @return array currently stored user associative array
      */
     public function store(Request $request)
     {
@@ -46,33 +63,46 @@ class UserController extends Controller
         $user->lastname = $request['lastname'];
         $user->username = $request['username'];
         $user->email = $request['email'];
-        $user->password = Hash::make($request['password']);
+        $user->password = $this->hash->make($request['password']);
 
         $user->save();
-
         unset($user->password);
 
         return array('user'=>$user);
     }
 
+    /**
+     * It returns all the users in the databse
+     *
+     * @return Illumnate\Http\Model
+     */
     public function getAllUsers() 
     {
-        return User::all();
+        return $this->user->all();
     }
 
-    public function getUser(Request $request, $id)
+    /**
+     * It finds one user and return it as a response
+     *
+     * @param int $userId Id of the user to be found
+     *
+     * @return Illuminate\Http\Response Response of user
+     */
+    public function getUser($userId)
     {
-        $user = User::find($id);
+        $user = $this->user->find($userId);
+
         if (!$user) {
             return response()->json(
                 array(
                     'error'=>true,
                     'message'=>'user not found',
-                    'id'=>$id
+                    'id' => $userId
                 ),
                 404
             );
         }  
+
         return response()->json(
             array(
                 'error'=>false,
@@ -82,17 +112,28 @@ class UserController extends Controller
         );
     }
 
+    /**
+     * It updates a user
+     *
+     * @param Request $request Laravel Http request
+     * @param int     $userId  id of the user to be updated
+     * 
+     * @return Illuminate\Http\Response http response of updated user
+     */
     public function update(Request $request, $userId)
     {
         $loggedInUserId =  JWTAuth::parseToken()->toUser()->id;
+        $user = $this->user->find($userId);
 
-        $user = User::find($userId);
         if ($user && $loggedInUserId == $userId) {
             $password = $request->input('password');
+
             if ($password) {
-                $request->password = Hash::make($password);
+                $request->password = $this->hash->make($password);
             }
+
             $user->update($request->only('firstname', 'lastname', 'password'));
+    
             return response()->json(
                 [
                     'error'=>false,
@@ -102,12 +143,19 @@ class UserController extends Controller
             );
         }
     }
-        
-    public function delete(Request $request, $userId)
+    
+    /**
+     * Deletes a user. Only a user can delete his/her account
+     *
+     * @param int $userId Id of user to be deleted
+     *
+     * @return Illuminate\Http\Response Http Response
+     */
+    public function delete($userId)
     {
         $loggedInUserId = JWTAuth::parseToken()->toUser()->id;
+        $user = $this->user->find($userId);
 
-        $user = User::find($userId);
         if ($user && $userId == $loggedInUserId) {
             $user->delete();
             return response()->json(
@@ -118,6 +166,7 @@ class UserController extends Controller
                 204
             );
         }
+
         return response()->json(
             [
                     'error'=> true,
@@ -126,5 +175,4 @@ class UserController extends Controller
             400
         );
     }
-    //
 }

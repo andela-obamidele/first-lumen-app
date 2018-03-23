@@ -6,24 +6,51 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\JWTAuth;
 
+/**
+ * Controller for login
+ * 
+ * @category Controller
+ * 
+ * @package None
+ * 
+ * @author Olufisayo Bamidele <andela.obamidele@andela.com>
+ * 
+ * @license /license.md MIT
+ * 
+ * @link None
+ */
 class AuthController extends Controller
 {
-    /**
-     * @var \Tymon\JWTAuth\JWTAuth
-     */
+
     protected $jwt;
 
+    /**
+     * Injects Tymon\JWTAuth\JWTAuth to the controller
+     *
+     * @param JWTAuth $jwt JWT helper
+     */
     public function __construct(JWTAuth $jwt)
     {
         $this->jwt = $jwt;
     }
 
+    /**
+     * It responds with a JWT token when endpoint is hit
+     * or it responds with an error response
+     * 
+     * @param Request $request Laravel Http Request
+     * 
+     * @return Illuminate\Http\Response
+     */
     public function postLogin(Request $request)
     {
-        $this->validate($request, [
+        $this->validate(
+            $request,
+            [
             'email'    => 'required|email|max:255',
             'password' => 'required',
-        ]);
+            ]
+        );
 
         try {
 
