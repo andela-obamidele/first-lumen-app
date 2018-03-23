@@ -1,21 +1,22 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Note;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
-use App\Note;
 
 /**
  * It contains methods for carrying out operation on Note model
- * 
+ *
  * @category Controller
  *
  * @package None
- * 
+ *
  * @author Olufisayo Bamidele <fisiwizy@gmail.com>
  *
  * @license /license.md MIT
- * 
+ *
  * @link None
  */
 class NoteController extends Controller
@@ -27,7 +28,7 @@ class NoteController extends Controller
      * Inject an instance of Note model into NoteController
      *
      * @param Note $note Note model
-     * 
+     *
      * @return void
      */
     public function __construct(Note $note)
@@ -39,7 +40,7 @@ class NoteController extends Controller
      * It saves a note
      *
      * @param Request $request HTTP request
-     * 
+     *
      * @return Illuminate\Http\Response JSON response
      */
     public function store(Request $request)
@@ -48,8 +49,8 @@ class NoteController extends Controller
         $this->validate(
             $request,
             [
-              'title'=>'required',
-              'content'=>'required'
+                'title' => 'required',
+                'content' => 'required',
             ]
         );
 
@@ -62,7 +63,7 @@ class NoteController extends Controller
 
         return response()->json(
             [
-                'note' => $note           
+                'note' => $note,
             ],
             201
         );
@@ -77,18 +78,21 @@ class NoteController extends Controller
     public function getAllNotes()
     {
         $currentUserId = JWTAuth::parseToken()->toUser()->id;
-        $notes = $this->note->all()->where('user_id', $currentUserId);
+        $notes = $this->note
+            ->orderBy('updated_at', 'desc')
+            ->where('user_id', $currentUserId)
+            ->get();
 
         if (count($notes) > 0) {
             return response()->json(
-                ['notes'=>$notes],
+                ['notes' => $notes],
                 200
             );
         }
 
         return response()->json(
             [
-             'error'=>'no notes in the database'
+                'error' => 'no notes in the database',
             ],
             404
         );
@@ -96,16 +100,16 @@ class NoteController extends Controller
 
     /**
      * It responds with all a note
-     * 
+     *
      * @param int $noteId id of the note to be returned
-     * 
+     *
      * @return Illuminate\Http\Response JSON response
      */
     public function getNote($noteId)
     {
-        $currentUserId =  JWTAuth::parseToken()->toUser()->id;
+        $currentUserId = JWTAuth::parseToken()->toUser()->id;
         $note = Note::find($noteId);
-       
+
         if (!$note) {
             return response()->json(
                 ['error' => 'note not found'],
@@ -116,15 +120,15 @@ class NoteController extends Controller
             return response()
                 ->json(
                     [
-                    'error' => 
-                    'sorry, you don\'t have permission to view this file'],
+                        'error' =>
+                        'sorry, you don\'t have permission to view this file'],
                     403
                 );
         }
-     
+
         return response()->json(
             [
-                'note'=>$note
+                'note' => $note,
             ],
             200
         );
@@ -139,13 +143,18 @@ class NoteController extends Controller
      *
      * @return Illuminate\Http\Response JSON response
      */
-    public function update(Request $request, $noteId) 
+    public function update(Request $request, $noteId)
     {
         $currentUserId = JWTAuth::parseToken()->toUser()->id;
         $note = Note::find($noteId);
-        
-        if ( $currentUserId !== $note->user_id) {
-            return response()->json(['error' => 'sorry, you don\'t have permission to view this file'], 403);
+
+        if ($currentUserId !== $note->user_id) {
+            return response()->json(
+                [
+                    'error' => 'sorry, you don\'t have permission to view this file',
+                ],
+                403
+            );
         }
 
         if ($note) {
@@ -153,15 +162,15 @@ class NoteController extends Controller
 
             return response()->json(
                 [
-                    'note'=>$note
+                    'note' => $note,
                 ],
                 200
             );
         }
         return response()->json(
             [
-                'error'=> true,
-                'message'=>'something went wrong'
+                'error' => true,
+                'message' => 'something went wrong',
             ],
             400
         );
@@ -169,29 +178,31 @@ class NoteController extends Controller
 
     /**
      * It deletes a note that belongs to the currently logged in user
-     * 
+     *
      * @param int $noteId Id of the note to be deleted
-     * 
+     *
      * @return Illuminate\Http\Response Http response of success message or error
      */
     public function delete($noteId)
     {
-        $currentUserId =  JWTAuth::parseToken()->toUser()->id;
+        $currentUserId = JWTAuth::parseToken()->toUser()->id;
         $note = $this->$note->find($noteId);
 
         if ($currentUserId !== $note->user_id) {
             return response()
-            ->json(
-                ['error' => 'sorry, you don\'t have permission to view this file'],
-                403
-            );
+                ->json(
+                    [
+                        'error' =>
+                        'sorry, you don\'t have permission to view this file'],
+                    403
+                );
         }
 
         if ($note) {
             $note->delete();
             return response()->json(
                 [
-                'message'=>'note deleted successfully'
+                    'message' => 'note deleted successfully',
                 ],
                 204
             );
@@ -199,8 +210,8 @@ class NoteController extends Controller
 
         return response()->json(
             [
-                'error'=>true, 
-                'message'=> 'something went wrong'
+                'error' => true,
+                'message' => 'something went wrong',
             ],
             400
         );
