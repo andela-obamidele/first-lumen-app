@@ -26,12 +26,12 @@ $router->group(
                 'uses' => 'UserController@getAllUsers',
             ]
         );
-        
+
         $router->get(
             '/users/current',
             [
                 'middleware' => 'auth',
-                'uses' => 'UserController@getCurrentUser'
+                'uses' => 'UserController@getCurrentUser',
             ]
         );
 
@@ -42,7 +42,6 @@ $router->group(
                 'uses' => 'UserController@getUser',
             ]
         );
-
 
         $router->get(
             '/notes',
@@ -59,6 +58,11 @@ $router->group(
                 'uses' => 'NoteController@getNote',
             ]
         );
+
+        $router->get('/passwords/reset/', [
+            'uses' => 'PasswordResetController@sendPasswordResetMail']);
+
+        $router->put('/passwords/reset/', ['middleware'=> 'auth','uses' => 'PasswordResetController@resetPassword']);
 
         $router->post('/users', 'UserController@store');
 
