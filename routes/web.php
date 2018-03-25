@@ -11,17 +11,20 @@
 |
  */
 $router->group(
-    ['prefix' => 'api/v1'], function () use ($router) {
+    ['prefix' => 'api/v1'],
+    function () use ($router) {
         $router->post('/auth/login', 'AuthController@postLogin');
 
         $router->get(
-            '/', function () {
+            '/',
+            function () {
                 return 'NOTE TAKER API v1.0';
             }
         );
 
         $router->get(
-            '/users', [
+            '/users',
+            [
                 'middleware' => 'auth',
                 'uses' => 'UserController@getAllUsers',
             ]
@@ -62,8 +65,6 @@ $router->group(
         $router->get('/passwords/reset/', [
             'uses' => 'PasswordResetController@sendPasswordResetMail']);
 
-        $router->put('/passwords/reset/', ['middleware'=> 'auth','uses' => 'PasswordResetController@resetPassword']);
-
         $router->post('/users', 'UserController@store');
 
         $router->post(
@@ -81,6 +82,7 @@ $router->group(
                 'uses' => 'UserController@update',
             ]
         );
+        $router->put('/passwords/reset/', ['middleware' => 'auth', 'uses' => 'PasswordResetController@resetPassword']);
 
         $router->put(
             '/notes/{id}',

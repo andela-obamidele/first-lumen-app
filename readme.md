@@ -140,11 +140,31 @@ The api uses jwt authentication.
     }
 ```
 
+### Get Currently Loggedin User
+
+#### Request
+
+`GET localhost/users/{id}`
+
+#### Response
+
+```
+   {
+        "id": 1,
+        "firstname": "John",
+        "lastname": "Doe",
+        "username": "jdoe",
+        "email": "johndoe@domain.com",
+        "created_at": "2017-11-07 20:28:14",
+        "updated_at": "2017-11-07 20:28:14"
+    }
+```
+
 #### Update User
 
 ##### Request
 
-`PUT localhost:<post>/api/v1/users/{id}`
+`PUT localhost:<port>/api/v1/users/{id}`
 
 ##### Payload sample
 
@@ -176,6 +196,43 @@ The api uses jwt authentication.
 Note: You can only update firstname, lastname and password
 ```
 
+### Resetting Password
+
+#### Request reset link
+
+##### Request
+`GET localhost:<port>/api/v1/passwords/reset?email=<user's email>&baseurl=<yourdomain.com/password/reset>`
+This sends an email to user's email which contains a link that looks like `yourdomain.com/passwords/reset/<jwttoken>`.  The token attached to this url only last for 15 mins
+
+##### Response
+```
+    {
+        "message": "Please check your email for instructions on how to reset your password"
+    }
+```
+
+#### Reset Password from the link
+When the users click on the reset link sent to them, it takes them to this part of your frontend `yourdomain.com/passwords/reset/<token>`.
+
+##### Request
+Grab the token parameter in the link. then sent the token as your authorization header like so:
+`Authorization: Bearer <thetoken>` then send:
+
+`PUT localhost:<port>/api/v1/passwords/reset`
+
+##### Payload
+````
+    password: <your new password>
+    confirm: <your new password>
+````
+
+##### Response
+```
+    {
+        "message": "You have reset your password successfully. You can now login with your new password"
+    }
+
+```
 
 #### Delete User
 
