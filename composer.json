@@ -11,7 +11,8 @@
         "squizlabs/php_codesniffer": "*",
         "phpmd/phpmd": "^2.6",
         "tymon/jwt-auth": "^1.0@dev",
-        "barryvdh/laravel-cors": "^0.11.0"
+        "barryvdh/laravel-cors": "^0.11.0",
+        "illuminate/mail": "^5.5"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
