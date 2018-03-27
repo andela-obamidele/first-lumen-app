@@ -186,7 +186,7 @@ class NoteController extends Controller
     public function delete($noteId)
     {
         $currentUserId = JWTAuth::parseToken()->toUser()->id;
-        $note = $this->$note->find($noteId);
+        $note = $this->note->find($noteId);
 
         if ($currentUserId !== $note->user_id) {
             return response()
