@@ -216,4 +216,37 @@ class NoteController extends Controller
             400
         );
     }
+
+    /**
+     * This deletes multiple notes
+     *
+     * @param string $noteIds Ids of notes
+     *
+     * @return Illuminate\Http\Response Http response of success message or error
+     */
+    public function bulkDelete($noteIds)
+    {
+        $currentUserId = JWTAuth::parseToken()->toUser()->id;
+        $ids = explode(',', $noteIds);
+        $foundNotes = $this->note->whereIn('id', $ids)
+            ->where('user_id', $currentUserId)->get()->count();
+
+        if ($foundNotes > 0) {
+            $this->note->destroy($ids);
+
+            return response()->json(
+                [
+                    'message' => 'delete successful',
+                ]
+            );
+        }
+
+        return response()->json(
+            [
+                'error' => true,
+                'message' => 'could not delete the notes',
+            ],
+            404
+        );
+    }
 }
