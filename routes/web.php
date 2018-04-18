@@ -101,12 +101,22 @@ $router->group(
                 ]
             );
 
-        $router->delete(
-            '/notes/{id}',
-            [
-                'middleware' => 'auth',
-                'uses' => 'NoteController@delete',
-            ]
-        );
+        $router
+            ->delete(
+                '/notes/bulk/{ids}',
+                [
+                    'middleware' => 'auth',
+                    'uses' => 'NoteController@bulkDelete',
+                ]
+            );
+
+        $router
+            ->delete(
+                '/notes/{id}',
+                [
+                    'middleware' => 'auth',
+                    'uses' => 'NoteController@delete',
+                ]
+            );
     }
 );
