@@ -49,15 +49,16 @@ class NoteController extends Controller
         $this->validate(
             $request,
             [
-                'title' => 'required',
+                'title' => 'max:80',
                 'content' => 'required',
             ]
         );
 
+        $requestBody = $request->all();
         $note = new Note();
         $note->user_id = JWTAuth::parseToken()->toUser()->id;
-        $note->title = $request['title'];
-        $note->content = $request['content'];
+        $note->title = $requestBody['title'] ?? '';
+        $note->content = $requestBody['content'];
 
         $note->save();
 
