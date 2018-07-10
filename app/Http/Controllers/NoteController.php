@@ -23,6 +23,8 @@ class NoteController extends Controller
 {
 
     public $note;
+    public $userId;
+    public $jwt;
 
     /**
      * Inject an instance of Note model into NoteController
@@ -34,6 +36,7 @@ class NoteController extends Controller
     public function __construct(Note $note)
     {
         $this->note = $note;
+        $this->userId = JWTAuth::parseToken()->toUser()->id;
     }
 
     /**
@@ -133,7 +136,52 @@ class NoteController extends Controller
             ],
             200
         );
+    }
 
+    public function getNotesByLimitAndOffset(Request $request)
+    {
+        $query = $request->query();
+
+        if (!$query) {
+            return response()->json(
+                [
+                    'error' => 'Please provide limit and offset'
+                ],
+                400
+            );
+        }
+
+        $limit = $query['limit'] ?? null;
+        $offset = $query['offset'] ?? null;
+
+        if (!$limit && !is_numeric($limit)) {
+            return response()->json(
+                [
+                    'error' => 'Limit is required and should be a number'
+                ],
+                400
+            );
+        }
+
+        if ($offset && !is_numeric($offset)) {
+            return response()->json(
+                [
+                    'error' => "If you're providing an offset, it should be a number"
+                ],
+                400
+            );
+        }
+
+        $count = $this->note->find($this->userId)->count();
+        $notes = $this->note->find($this->userId)->skip($offset)->take($limit)->get();
+        $page = [
+            'notesCount' => $count,
+            'currentPage' => $offset/$limit,
+            'totalPages' => $count/$limit,
+            'notes' => $notes
+        ];
+
+        return response()->json($page, 200);
     }
 
     /**
@@ -209,7 +257,7 @@ class NoteController extends Controller
             );
         }
 
-        return response()->json(
+        return $this->response->json(
             [
                 'error' => true,
                 'message' => 'something went wrong',

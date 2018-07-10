@@ -55,6 +55,13 @@ $router->group(
         );
 
         $router->get(
+            '/notes/pages',
+            [
+                'middleware' => 'auth',
+                'uses' => 'NoteController@getNotesByLimitAndOffset'
+            ]
+        );
+        $router->get(
             '/notes/{id}',
             [
                 'middleware' => 'auth',
