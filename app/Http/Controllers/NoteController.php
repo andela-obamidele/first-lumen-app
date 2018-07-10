@@ -71,7 +71,6 @@ class NoteController extends Controller
             ],
             201
         );
-
     }
 
     /**
@@ -138,6 +137,14 @@ class NoteController extends Controller
         );
     }
 
+    /**
+     * It fetches note with limit and offset parameters
+     * allowing frontend to paginate easily
+     *
+     * @param \Illuminate\Http\Request  Request
+     *
+     * @return \Illuminate\Http\Request  Response
+     */
     public function getNotesByLimitAndOffset(Request $request)
     {
         $query = $request->query();
@@ -297,5 +304,31 @@ class NoteController extends Controller
             ],
             404
         );
+    }
+
+    /**
+     * This searches a note by title using query param 'query'
+     *
+     * @param  \Illuminate\Http\Request Request
+     *
+     * @return \Illuminate\Http\Respnse Found note
+     */
+    public function search(Request $request)
+    {
+        $query = $request->query();
+
+        if (!isset($query['query'])) {
+            return response()->json(['error' => true, 'you need to provide a param "query"'], 400);
+        }
+
+        $notes = $this->note->where('user_id', '=', $this->userId)
+            ->where('title', 'LIKE', '%'.$query['query'].'%')
+            ->get();
+
+        if (count($notes) > 0) {
+            return response()->json(['notes' => $notes], 200);
+        }
+
+        return response()->json(['error'=> true, 'message' => 'not found'], 404);
     }
 }

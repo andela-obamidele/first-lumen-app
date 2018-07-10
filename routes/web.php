@@ -55,6 +55,14 @@ $router->group(
         );
 
         $router->get(
+            '/notes/search/',
+            [
+                'middleware' => 'auth',
+                'uses' => 'NoteController@search',
+            ]
+        );
+
+        $router->get(
             '/notes/pages',
             [
                 'middleware' => 'auth',
@@ -71,6 +79,7 @@ $router->group(
 
         $router->get('/passwords/reset/', [
             'uses' => 'PasswordResetController@sendPasswordResetMail']);
+
 
         $router->post('/users', 'UserController@store');
 
