@@ -10,7 +10,6 @@ use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
-
 class User extends Model implements JWtSubject, AuthenticatableContract, AuthorizableContract
 {
     use Authenticatable, Authorizable;
@@ -33,7 +32,7 @@ class User extends Model implements JWtSubject, AuthenticatableContract, Authori
         'password',
     ];
     
-    /** 
+    /**
     * User has many notes
     *
     * @return \Illuminate\Database\Eloquent\Relations\HasMany

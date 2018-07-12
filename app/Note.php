@@ -2,11 +2,7 @@
 
 namespace App;
 
-use Illuminate\Auth\Authenticatable;
-use Laravel\Lumen\Auth\Authorizable;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
-use Illuminate\Contracts\Auth\Access\Authorizable as AuthorizableContract;
 
 class Note extends Model
 {
@@ -20,7 +16,7 @@ class Note extends Model
         'title', 'content', 'user_id'
     ];
     
-    /** 
+    /**
     * Note belongs to User
     *
     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -28,5 +24,10 @@ class Note extends Model
     public function users()
     {
         return $this->belongsTo('App\User');
+    }
+
+    public function tags()
+    {
+        return $this->belongsToMany('App\Tags');
     }
 }

@@ -90,6 +90,7 @@ $router->group(
                 'uses' => 'NoteController@store',
             ]
         );
+        $router->post('/tags', 'TagController@create');
 
         $router->put(
             '/users/{id}',
