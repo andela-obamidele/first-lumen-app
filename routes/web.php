@@ -79,7 +79,14 @@ $router->group(
 
         $router->get('/passwords/reset/', [
             'uses' => 'PasswordResetController@sendPasswordResetMail']);
-
+        $router->get('/tags', [
+            'middleware' => 'auth',
+            'uses' => 'TagController@getAll'
+        ]);
+        $router->get('tags/search/', [
+            'middleware' => 'auth',
+            'uses' => 'TagController@search'
+        ]);
 
         $router->post('/users', 'UserController@store');
 
@@ -90,7 +97,11 @@ $router->group(
                 'uses' => 'NoteController@store',
             ]
         );
-        $router->post('/tags', 'TagController@create');
+        $router->post('/tags', [
+            'middleware' => 'auth',
+            'uses' => 'TagController@create'
+        ]);
+
 
         $router->put(
             '/users/{id}',
