@@ -1,8 +1,9 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use App\Note;
+use App\Tag;
+use App\Traits\TagOperations;
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -22,9 +23,12 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 class NoteController extends Controller
 {
 
+    use TagOperations;
+
     public $note;
     public $userId;
     public $jwt;
+    private $tag;
 
     /**
      * Inject an instance of Note model into NoteController
@@ -33,10 +37,11 @@ class NoteController extends Controller
      *
      * @return void
      */
-    public function __construct(Note $note)
+    public function __construct(Note $note, Tag $tag)
     {
         $this->note = $note;
         $this->userId = JWTAuth::parseToken()->toUser()->id;
+        $this->tag = $tag;
     }
 
     /**
@@ -52,7 +57,7 @@ class NoteController extends Controller
         $this->validate(
             $request,
             [
-                'title' => 'max:80',
+                'title' => 'max:150',
                 'content' => 'required',
             ]
         );
@@ -152,7 +157,7 @@ class NoteController extends Controller
         if (!$query) {
             return response()->json(
                 [
-                    'error' => 'Please provide limit and offset'
+                    'error' => 'Please provide limit and offset',
                 ],
                 400
             );
@@ -164,7 +169,7 @@ class NoteController extends Controller
         if (!$limit && !is_numeric($limit)) {
             return response()->json(
                 [
-                    'error' => 'Limit is required and should be a number'
+                    'error' => 'Limit is required and should be a number',
                 ],
                 400
             );
@@ -173,7 +178,7 @@ class NoteController extends Controller
         if ($offset && !is_numeric($offset)) {
             return response()->json(
                 [
-                    'error' => "If you're providing an offset, it should be a number"
+                    'error' => "If you're providing an offset, it should be a number",
                 ],
                 400
             );
@@ -183,9 +188,9 @@ class NoteController extends Controller
         $notes = $this->note->find($this->userId)->skip($offset)->take($limit)->get();
         $page = [
             'notesCount' => $count,
-            'currentPage' => $offset/$limit,
-            'totalPages' => $count/$limit,
-            'notes' => $notes
+            'currentPage' => $offset / $limit,
+            'totalPages' => $count / $limit,
+            'notes' => $notes,
         ];
 
         return response()->json($page, 200);
@@ -322,13 +327,44 @@ class NoteController extends Controller
         }
 
         $notes = $this->note->where('user_id', '=', $this->userId)
-            ->where('title', 'LIKE', '%'.$query['query'].'%')
+            ->where('title', 'LIKE', '%' . $query['query'] . '%')
             ->get();
 
         if (count($notes) > 0) {
             return response()->json(['notes' => $notes], 200);
         }
 
-        return response()->json(['error'=> true, 'message' => 'not found'], 404);
+        return response()->json(['error' => true, 'message' => 'not found'], 404);
+    }
+
+    public function addTag(Request $request, $noteId)
+    {
+        $this->validate($request, [
+            'tag' => 'required:150',
+        ]);
+
+        $note = $this->note->where('user_id', '=', $this->userId)
+            ->where('id', '=', $noteId)
+            ->with('tags')
+            ->first();
+
+        if (!$note) {
+            return response()->json([
+                'error' => true,
+                'message' => 'note not found',
+            ], 404);
+        }
+        $tag = $this->tag->firstOrCreate(['name' => $request->input('tag')]);
+
+
+        if (!$note->tags->contains($tag->id)) {
+            $note->tags()->attach($tag['id']);
+        }
+
+        $this->associateTagToUser($tag, $this->userId);
+
+        return response()->json([
+            'tags' => $note->tags,
+        ], 200);
     }
 }

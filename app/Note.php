@@ -28,6 +28,7 @@ class Note extends Model
 
     public function tags()
     {
-        return $this->belongsToMany('App\Tags');
+        return $this->belongsToMany('App\Tag', 'note_tags')
+            ->withTimestamps();
     }
 }
