@@ -42,6 +42,12 @@ class User extends Model implements JWtSubject, AuthenticatableContract, Authori
         return $this->hasMany('App\Note');
     }
 
+    public function tags()
+    {
+        return $this->belongsToMany('App\Tag', 'user_tags')
+            ->withTimestamps();
+    }
+
     public function getJWTIdentifier()
     {
         return $this->getKey();

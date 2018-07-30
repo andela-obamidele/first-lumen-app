@@ -120,6 +120,8 @@ $router->group(
             ]
         );
 
+        $router->put('/notes/tags/{noteId}', ['middleware' => 'auth', 'uses' => 'NoteController@addTag']);
+
         $router
             ->delete(
                 '/users/{id}',

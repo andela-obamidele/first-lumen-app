@@ -7,8 +7,14 @@ class Tag extends Model
 {
     protected $fillable = ['name'];
 
-    public function note()
+    public function notes()
     {
-        return $this->belongsToMany('App\Note');
+        return $this->belongsToMany('App\Note', 'note_tags');
+    }
+
+    public function users()
+    {
+        return $this->belongsToMany('App\User', 'user_tags')
+            ->withTimestamps();
     }
 }
