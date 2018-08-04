@@ -66,7 +66,7 @@ $router->group(
             '/notes/pages',
             [
                 'middleware' => 'auth',
-                'uses' => 'NoteController@getNotesByLimitAndOffset'
+                'uses' => 'NoteController@getNotesByLimitAndOffset',
             ]
         );
         $router->get(
@@ -77,15 +77,27 @@ $router->group(
             ]
         );
 
-        $router->get('/passwords/reset/', [
-            'uses' => 'PasswordResetController@sendPasswordResetMail']);
+        $router->get(
+            '/notes/tags/{id}',
+            [
+                'middleware' => 'auth',
+                'uses' => 'NoteController@fetchNoteTags',
+            ]
+        );
+        $router->get(
+            '/passwords/reset/',
+            [
+                'middleware' => 'auth',
+                'uses' => 'PasswordResetController@sendPasswordResetMail',
+        ]);
+
         $router->get('/tags', [
             'middleware' => 'auth',
-            'uses' => 'TagController@getAll'
+            'uses' => 'TagController@getAll',
         ]);
         $router->get('tags/search/', [
             'middleware' => 'auth',
-            'uses' => 'TagController@search'
+            'uses' => 'TagController@search',
         ]);
 
         $router->post('/users', 'UserController@store');
@@ -99,9 +111,8 @@ $router->group(
         );
         $router->post('/tags', [
             'middleware' => 'auth',
-            'uses' => 'TagController@create'
+            'uses' => 'TagController@create',
         ]);
-
 
         $router->put(
             '/users/{id}',
