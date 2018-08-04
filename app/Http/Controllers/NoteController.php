@@ -13,7 +13,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
  * @category Controller
  *
  * @package None
- *
+ *download phpmyadmin
  * @author Olufisayo Bamidele <fisiwizy@gmail.com>
  *
  * @license /license.md MIT
@@ -26,6 +26,7 @@ class NoteController extends Controller
     use TagOperations;
 
     public $note;
+    public $user;
     public $userId;
     public $jwt;
     private $tag;
@@ -40,7 +41,8 @@ class NoteController extends Controller
     public function __construct(Note $note, Tag $tag)
     {
         $this->note = $note;
-        $this->userId = JWTAuth::parseToken()->toUser()->id;
+        $this->user = JWTAuth::parseToken()->toUser();
+        $this->userId = $this->user['id'];
         $this->tag = $tag;
     }
 
@@ -87,6 +89,7 @@ class NoteController extends Controller
     {
         $currentUserId = JWTAuth::parseToken()->toUser()->id;
         $notes = $this->note
+            ->with('tags')
             ->orderBy('updated_at', 'desc')
             ->where('user_id', $currentUserId)
             ->get();
@@ -97,7 +100,6 @@ class NoteController extends Controller
                 200
             );
         }
-
         return response()->json(
             [
                 'error' => 'no notes in the database',
@@ -366,5 +368,30 @@ class NoteController extends Controller
         return response()->json([
             'tags' => $note->tags,
         ], 200);
+    }
+
+    /**
+     * This returns tags for a user's note
+     * 
+     * @param string id of the note to fetch
+     * 
+     * @return Illuminate\Http\Request
+     */
+    public function fetchNoteTags($noteId) {
+       $note = $this->user->notes()
+            ->with('tags')
+            ->where('id', '=', $noteId)
+            ->first();
+
+        if(!$note) {
+            return response()->json([
+                'error' => true,
+                'message' => "the note who's tag you're trying to find must have been deleted"
+            ], 404);
+        }
+
+        return response()->json([
+            'tags' => $note->tags
+        ]);
     }
 }

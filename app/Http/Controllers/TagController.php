@@ -2,10 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use App\Tag;
 use App\Note;
+use App\Tag;
 use App\User;
-
 use Illuminate\Http\Request;
 use Tymon\JWTAuth\Facades\JWTAuth;
 
@@ -46,11 +45,14 @@ class TagController extends Controller
     }
 
     /**
-     * Get all tags
+     * Get all tags belonging to a user
+     * 
+     * @return Illuminate\Http\Response all tags belonging to a user
      */
     public function getAll()
     {
-        $tags = $this->tag->all();
+        $tags = $this->user->tags()
+            ->get();
 
         if (!$tags) {
             return response()->json([
@@ -62,6 +64,14 @@ class TagController extends Controller
         return response()->json(['tags' => $tags], 200);
     }
 
+    /**
+     * It searches for that matches a search term
+     * belonging to a particular user
+     * 
+     * @param Illuminate\Http\Request
+     * 
+     * @return Illuminate\Http\Response found
+     */
     public function search(Request $request)
     {
         $this->validate($request, [
@@ -69,8 +79,8 @@ class TagController extends Controller
         ]);
 
         $query = $request->query()['query'];
-        $tags = $this->tag
-            ->where('name', 'LIKE', '%'.$query.'%')->get();
+        $tags = $this->users->tags()
+            ->where('name', 'LIKE', '%' . $query . '%')->get();
 
         if (!$tags) {
             return response()->json([
@@ -81,5 +91,4 @@ class TagController extends Controller
 
         return response()->json(['tags' => $tags], 200);
     }
-    //
 }
