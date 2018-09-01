@@ -374,7 +374,7 @@ class NoteController extends Controller
      * 
      * @param string id of the note to fetch
      * 
-     * @return Illuminate\Http\Request
+     * @return Illuminate\Http\Response
      */
     public function fetchNoteTags($noteId) {
        $note = $this->user->notes()
@@ -391,6 +391,33 @@ class NoteController extends Controller
 
         return response()->json([
             'tags' => $note->tags
+        ]);
+    }
+
+    /**
+     * It removes a tag from a note
+     * 
+     * @param Integer Id of the note whose tag is to be removed
+     * @param Integer Id of the tag to be removed
+     * 
+     * @return \Illuminate\Http\Response
+     */
+    public function removeTag($noteId, $tagId) {
+        $note = $this->user->notes()
+            ->find($noteId);
+
+        if(!$note) {
+            return response()
+                ->json([
+                    'error' => true,
+                    'message' => 'note not found'
+                ]);
+        }
+
+        $note->tags()->detach($tagId);
+
+        return response()->json([
+            'tags'=> $note->tags()->get()
         ]);
     }
 }
