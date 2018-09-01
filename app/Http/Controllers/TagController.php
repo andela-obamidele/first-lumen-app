@@ -15,6 +15,7 @@ class TagController extends Controller
     private $note;
     private $userId;
     private $user;
+    private $currentUser;
 
     /**
      * Create a new controller instance.
@@ -26,7 +27,9 @@ class TagController extends Controller
         $this->tag = $tag;
         $this->note = $note;
         $this->user = $user;
-        $this->userId = JWTAuth::parseToken()->toUser()->id;
+        $currentUser = JWTAuth::parseToken()->toUser();
+        $this->userId = $currentUser->id;
+        $this->currentUser = $currentUser;
     }
 
     /**
@@ -79,15 +82,17 @@ class TagController extends Controller
         ]);
 
         $query = $request->query()['query'];
-        $tags = $this->users->tags()
-            ->where('name', 'LIKE', '%' . $query . '%')->get();
+        $tags = $this->currentUser
+            ->tags()
+            ->where('name', 'LIKE', '%' . $query . '%')
+            ->get();
 
-        if (!$tags) {
+        if (sizeof($tags) < 1) {
             return response()->json([
                 'error' => true,
                 'message' => 'no tag found',
             ], 404);
-        }
+        }   
 
         return response()->json(['tags' => $tags], 200);
     }

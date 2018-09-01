@@ -356,17 +356,16 @@ class NoteController extends Controller
                 'message' => 'note not found',
             ], 404);
         }
-        $tag = $this->tag->firstOrCreate(['name' => $request->input('tag')]);
 
+        $tag = $this->tag->firstOrCreate(['name' => $request->input('tag')]);
 
         if (!$note->tags->contains($tag->id)) {
             $note->tags()->attach($tag['id']);
         }
 
         $this->associateTagToUser($tag, $this->userId);
-
         return response()->json([
-            'tags' => $note->tags,
+            'tags' => $note->tags()->get(),
         ], 200);
     }
 
