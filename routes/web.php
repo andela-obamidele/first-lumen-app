@@ -89,7 +89,7 @@ $router->group(
             [
                 'middleware' => 'auth',
                 'uses' => 'PasswordResetController@sendPasswordResetMail',
-        ]);
+            ]);
 
         $router->get('/tags', [
             'middleware' => 'auth',
@@ -157,6 +157,14 @@ $router->group(
                 [
                     'middleware' => 'auth',
                     'uses' => 'NoteController@delete',
+                ]
+            );
+        $router
+            ->delete(
+                '/notes/{noteId}/tags/{tagId}',
+                [
+                    'middleware' => 'auth',
+                    'uses' => 'NoteController@removeTag',
                 ]
             );
     }
