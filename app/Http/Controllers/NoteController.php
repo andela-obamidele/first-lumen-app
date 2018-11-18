@@ -328,9 +328,7 @@ class NoteController extends Controller
             return response()->json(['error' => true, 'you need to provide a param "query"'], 400);
         }
 
-        $notes = $this->note->where('user_id', '=', $this->userId)
-            ->where('title', 'LIKE', '%' . $query['query'] . '%')
-            ->get();
+        $notes =  $this->note->searchForNotesAndFilter($query, $this->userId)->get();
 
         if (count($notes) > 0) {
             return response()->json(['notes' => $notes], 200);
@@ -393,6 +391,7 @@ class NoteController extends Controller
             'tags' => $note->tags
         ]);
     }
+
 
     /**
      * It removes a tag from a note
