@@ -97,7 +97,7 @@ class PasswordResetController extends Controller
             ], 400);
         }
 
-        $tokenPayload = $this->jwt->parseToken()->toUser();
+        $tokenPayload = $this->jwt->toUser($this->jwt->getToken());
 
         if ($tokenPayload) {
             $user = $this->user->where('email', $tokenPayload->email)->first();
