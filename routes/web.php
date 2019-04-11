@@ -87,7 +87,6 @@ $router->group(
         $router->get(
             '/passwords/reset/',
             [
-                'middleware' => 'auth',
                 'uses' => 'PasswordResetController@sendPasswordResetMail',
             ]);
 
